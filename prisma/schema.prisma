@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// user schema
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  companyId String
+  createdAt DateTime @default(now()) @map(name: "created_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  Job     Job[]
+
+  @@map(name: "users")
+}
+
+// company schema
+model Company {
+  id      String @id @default(cuid())
+  name    String
+  address String
+  jobs    Job[]
+  User    User[]
+
+  @@map(name: "companies")
+}
+
+// job schema
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @default("none")
+  companyId   String
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  userId      String
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map(name: "jobs")
+}

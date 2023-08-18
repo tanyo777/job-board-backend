@@ -1,0 +1,72 @@
+type Query {
+  job(id: ID!): Job
+  jobs(limit: Int, offset: Int): JobsWithCount!
+  company(id: ID!): Company
+  companies: [CompanyInfo!]
+}
+
+type Subscription {
+  jobAdded: Job!
+  jobDeleted: Job!
+}
+
+type Mutation {
+  createJob(input: CreateJobInput!): Job!
+  deleteJob(id: ID!): Job!
+  updateJob(input: UpdateJobInput!): JobsWithCount!
+}
+
+type JobsWithCount {
+  jobs: [Job!]
+  count: Int
+}
+
+input UpdateJobInput {
+  id: ID!
+  title: String!
+  description: String
+}
+
+input CreateJobInput {
+  title: String!
+  description: String
+  companyId: ID!
+}
+
+# custom types
+# ! means that the field does not return null (it must have a value)
+type Job {
+  id: ID! # required
+  title: String!
+  description: String
+  """
+  A company representative who published the job.
+  """
+  company: CompanyInfo!
+  """
+  The __date__ when the job was published.
+  """
+  date: String!
+  user: UserInfo!
+}
+
+type UserInfo {
+  id: ID!
+  email: String!
+}
+
+type CompanyInfo {
+  id: ID! # required
+  name: String!
+  address: String!
+}
+
+"""
+Representa a company
+"""
+type Company {
+  id: ID! # required
+  name: String!
+  address: String!
+  jobs: [Job!]!
+}
